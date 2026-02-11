@@ -1,0 +1,9 @@
+[
+  {
+    "id": "1770242823978",
+    "name": "Test User",
+    "email": "test_1770242823529@example.com",
+    "password": "$2b$10$wozP154curDPVmIuF15Fy.4gVWTLtVXUmxMCstneYYNt0ie1McW1a",
+    "level": "admin"
+  }
+]
