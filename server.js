@@ -314,6 +314,10 @@ app.get('/api/orders', authenticateToken, (req, res) => {
     });
 });
 
+app.get('/', (req, res) => {
+    res.send('¡El servidor está funcionando correctamente! 🚀');
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
