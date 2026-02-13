@@ -60,7 +60,8 @@ app.post('/api/register', (req, res) => {
 
     db.get(checkSql, [email], async (err, row) => {
         if (err) {
-            return res.status(500).json({ success: false, message: "Database error." });
+            console.error('>>> Registration Error (Check SQL):', err);
+            return res.status(500).json({ success: false, message: "Database error during check." });
         }
         if (row) {
             return res.status(409).json({ success: false, message: 'Email already registered.' });
@@ -73,6 +74,7 @@ app.post('/api/register', (req, res) => {
 
         db.run(insertSql, [name, email, hashedPassword, level], function (err) {
             if (err) {
+                console.error('>>> Registration Error (Insert SQL):', err);
                 return res.status(500).json({ success: false, message: err.message });
             }
             res.json({ success: true, message: 'User registered successfully!' });
@@ -92,7 +94,8 @@ app.post('/api/login', (req, res) => {
 
     db.get(sql, [email], async (err, user) => {
         if (err) {
-            return res.status(500).json({ success: false, message: "Database error." });
+            console.error('>>> Login Error (Get User SQL):', err);
+            return res.status(500).json({ success: false, message: "Database error during login." });
         }
         if (!user) {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
