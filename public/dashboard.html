@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RODRI-MARKET - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
+</head>
+
+<body class="logged-in">
+
+    <header class="site-header">
+        <div class="brand">RODRI-MARKET</div>
+        <div class="header-search" style="display: flex;">
+            <input type="text" id="header-search-input" placeholder="Buscar por código..."
+                oninput="handleHeaderSearch(event)">
+        </div>
+        <div id="header-user-info" style="display: flex; align-items: center; gap: 10px; margin-right: 20px;">
+            <span id="header-user-role" class="badge"></span>
+            <span id="header-user-name" style="font-weight: 600;"></span>
+        </div>
+        <nav class="header-nav" style="display: flex;">
+            <a onclick="switchDashboardTab('overview')" class="nav-link">Inicio</a>
+            <a onclick="switchDashboardTab('products')" class="nav-link" id="nav-products">Productos</a>
+            <a onclick="toggleOrders()" class="nav-link" id="nav-orders" style="cursor: pointer;">Mis Pedidos</a>
+            <div class="cart-btn-wrapper" onclick="toggleCart()"
+                style="cursor: pointer; position: relative; margin-right: 15px; display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span id="cart-count-badge" class="cart-badge" style="display: none;">0</span>
+            </div>
+            <a onclick="logout()" class="nav-link">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="main-container">
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboard-section" class="active">
+
+            <div id="overview-section">
+                <div class="product-showcase">
+                    <div class="dashboard-header">
+                        <h1>Productos de Tecnología</h1>
+                        <p class="subtitle">Explora las últimas novedades</p>
+                    </div>
+
+                    <div id="product-feed" class="product-feed">
+                        <!-- Products will be injected here as cards -->
+                        <div class="loading-products">Cargando productos...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCT MANAGEMENT SECTION -->
+            <div id="product-section" class="product-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Gestión de Productos</h2>
+                    <div class="search-bar">
+                        <input type="text" id="search-code" placeholder="Buscar en mis productos..."
+                            oninput="handleSearch(this.value)">
+                    </div>
+                </div>
+
+                <!-- CREATE PRODUCT FORM (ADMIN ONLY) -->
+                <div id="create-product-container" style="display: none;">
+                    <div class="create-product-form">
+                        <h3 id="form-title">Nuevo Producto</h3>
+                        <form onsubmit="handleCreateProduct(event)" id="product-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Nombre</label>
+                                    <input type="text" id="prod-name" required placeholder="Ej. Macbook Pro">
+                                </div>
+                                <div class="form-group">
+                                    <label>Código</label>
+                                    <input type="text" id="prod-code" required placeholder="Ej. A001">
+                                </div>
+                                <div class="form-group">
+                                    <label>Precio</label>
+                                    <input type="number" step="0.01" id="prod-price" required placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label>Descripción</label>
+                                <textarea id="prod-desc" rows="2" placeholder="Detalles del producto..."></textarea>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn-primary" id="save-btn">Guardar Producto</button>
+                                <button type="button" class="btn-secondary" id="cancel-btn" style="display: none;"
+                                    onclick="cancelEdit()">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- PRODUCT LIST -->
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>Cód.</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-list-body">
+                            <!-- Products will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ORDERS SECTION -->
+                <!-- ORDERS SECTION (Removed from here) -->
+            </div>
+        </div>
+
+    </div>
+
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">Mensaje aquí</div>
+
+    <!-- ORDERS MODAL (Refactored) -->
+    <div id="orders-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content cart-modal">
+            <div class="modal-header">
+                <h2>Mis Pedidos</h2>
+                <button onclick="toggleOrders()" class="close-btn">&times;</button>
+            </div>
+            <div class="cart-items" style="padding: 0;">
+                <div class="table-container" style="margin: 0;">
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-list-body">
+                            <!-- Orders will be injected here -->
+                            <tr>
+                                <td colspan="4" style="text-align:center; padding: 20px;">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="cart-footer">
+                <button onclick="toggleOrders()" class="btn-primary" style="width: 100%;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART MODAL -->
+    <div id="cart-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content cart-modal">
+            <div class="modal-header">
+                <h2>Tu Carrito</h2>
+                <button onclick="toggleCart()" class="close-btn">&times;</button>
+            </div>
+            <div id="cart-items-container" class="cart-items">
+                <!-- Items will be injected here -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cart-total-amount">$0.00</span>
+                </div>
+                <div class="cart-actions" style="flex-direction: column;">
+                    <button onclick="clearCart()" class="btn-secondary"
+                        style="color: var(--error); border-color: var(--error); width: 100%;">Vaciar Carrito</button>
+                    <div id="paypal-button-container" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main-dashboard.js"></script>
+</body>
+
+</html>
