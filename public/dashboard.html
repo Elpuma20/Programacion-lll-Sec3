@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ffca28">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
 </head>
 
@@ -194,6 +197,15 @@
     </div>
 
     <script type="module" src="js/main-dashboard.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('SW Registered', reg))
+                    .catch(err => console.log('SW Error', err));
+            });
+        }
+    </script>
 </body>
 
 </html>

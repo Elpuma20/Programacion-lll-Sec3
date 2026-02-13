@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/auth.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ffca28">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
 </head>
 
 <body>
@@ -93,9 +96,18 @@
     </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="toast">Mensaje aquí</div>
+    <div id="toast" class="toast"></div>
 
     <script type="module" src="js/main-auth.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('SW Registered', reg))
+                    .catch(err => console.log('SW Error', err));
+            });
+        }
+    </script>
 </body>
 
 </html>
