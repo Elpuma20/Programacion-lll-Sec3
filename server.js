@@ -13,7 +13,8 @@ const SECRET_KEY = 'super_secret_key_change_this_in_production';
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public'));
+// Standardize static serving from the 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware for Token Verification
 const authenticateToken = (req, res, next) => {
@@ -120,8 +121,6 @@ app.get('/api/products', authenticateToken, (req, res) => {
         res.json({ success: true, products: rows });
     });
 });
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
