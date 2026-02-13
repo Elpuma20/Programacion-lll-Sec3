@@ -10,6 +10,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = 'super_secret_key_change_this_in_production';
 
+const fs = require('fs');
+
+// Diagnostic Logging for Render
+console.log('>>> Current Working Directory:', process.cwd());
+console.log('>>> __dirname:', __dirname);
+try {
+    const publicPath = path.join(__dirname, 'public');
+    if (fs.existsSync(publicPath)) {
+        console.log('>>> public directory exists. Contents:', fs.readdirSync(publicPath));
+    } else {
+        console.warn('>>> WARNING: public directory NOT found at:', publicPath);
+    }
+} catch (e) {
+    console.error('>>> Error checking public directory:', e.message);
+}
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -122,11 +138,6 @@ app.get('/api/products', authenticateToken, (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Get Product by Code (Authenticated)
 app.get('/api/products/:code', authenticateToken, (req, res) => {
     const code = req.params.code;
     const sql = "SELECT * FROM products WHERE code = ?";
@@ -320,6 +331,6 @@ app.get('/api/orders', authenticateToken, (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
 });
