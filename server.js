@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -118,6 +119,12 @@ app.get('/api/products', authenticateToken, (req, res) => {
         }
         res.json({ success: true, products: rows });
     });
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Get Product by Code (Authenticated)
@@ -312,10 +319,6 @@ app.get('/api/orders', authenticateToken, (req, res) => {
         if (err) return res.status(500).json({ success: false, message: "Database error." });
         res.json({ success: true, orders: rows });
     });
-});
-
-app.get('/', (req, res) => {
-    res.send('¡El servidor está funcionando correctamente! 🚀');
 });
 
 app.listen(PORT, () => {
