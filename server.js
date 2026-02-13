@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const db = require('./database'); // Import SQLite connection
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const SECRET_KEY = 'super_secret_key_change_this_in_production';
 
 // Middleware
